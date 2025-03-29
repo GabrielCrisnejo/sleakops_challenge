@@ -1,13 +1,33 @@
 from pydantic import BaseModel
-from datetime import datetime
-from typing import List, Optional
+from typing import Optional, List
 from decimal import Decimal
+from datetime import datetime
+
+class TermAttributes(BaseModel):
+    LeaseContractLength: Optional[str] = None
+    PurchaseOption: Optional[str] = None
+
+class DatabasePrice(BaseModel):
+    rateCode: Optional[str] = None
+    dailyPrice: Optional[Decimal] = None
+    monthlyPrice: Optional[Decimal] = None
+    annualPrice: Optional[Decimal] = None
+
+class SimplifiedPricingData(BaseModel):
+    sku: str
+    database_engine: Optional[str] = None
+    instance_type: Optional[str] = None
+    memory: Optional[str] = None
+    vcpu: Optional[int] = None
+    termType: str
+    termAttributes: Optional[TermAttributes] = None # Agregado
+    databasePrice: list[DatabasePrice]
 
 class PriceDimensionBase(BaseModel):
     rateCode: str
     unit: str
     beginRange: Optional[Decimal] = None
-    endRange: Optional[str] = None # Permitir None
+    endRange: Optional[str] = None
     description: str
     priceUSD: Optional[Decimal] = None
 
@@ -37,7 +57,7 @@ class Term(TermBase):
     price_dimensions: List[PriceDimension]
 
     class Config:
-        from_attributes = True # Cambio aquí
+        from_attributes = True
 
 class PricingDataBase(BaseModel):
     sku: str
@@ -55,4 +75,4 @@ class PricingData(PricingDataBase):
     terms: List[Term]
 
     class Config:
-        from_attributes = True # Cambio aquí
+        from_attributes = True

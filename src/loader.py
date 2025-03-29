@@ -81,6 +81,8 @@ class RdsPricingDataLoader:
                             offerTermCode=term_info.get("offerTermCode"), # Usamos term_info aqui
                             effectiveDate=term_info.get("effectiveDate"), # Y aqui
                             termType=term_type,  # Usamos el tipo de término (OnDemand, Reserved)
+                            leaseContractLength=term_info.get("termAttributes", {}).get("LeaseContractLength"),
+                            purchaseOption=term_info.get("termAttributes", {}).get("PurchaseOption"),
                         )
                         self.session.add(term)
                         self.session.flush()  # Para obtener el ID generado
