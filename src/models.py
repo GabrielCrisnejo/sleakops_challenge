@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Numeric, ForeignKey, TIMESTAMP
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base #Modificamos la importacion
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import TIMESTAMP
 
 Base = declarative_base()
 

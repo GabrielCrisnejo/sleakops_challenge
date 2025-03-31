@@ -32,7 +32,7 @@ def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_
                 database_price = []
                 for price_dimension in term.price_dimensions:
                     price_usd = Decimal(str(price_dimension.priceUSD)) if price_dimension.priceUSD else Decimal('0')
-                    daily_price = price_usd * 24
+                    daily_price = price_usd
                     monthly_price = daily_price * 30
                     annual_price = daily_price * 365
                     database_price.append(schemas.DatabasePrice(
@@ -52,7 +52,6 @@ def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_
                     databasePrice=database_price
                 )
 
-                # Agregar termAttributes solo si termType es "Reserved"
                 if term.termType == "Reserved":
                     simplified_data.termAttributes = schemas.TermAttributes(
                         LeaseContractLength=term.leaseContractLength,
@@ -66,36 +65,53 @@ def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_
         logger.error(f"Error en read_pricing_data: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@router.post("/terms/", response_model=schemas.Term)
-def create_term(term: schemas.TermCreate, db: Session = Depends(DatabaseManager().get_db)):
-    db_term = models.Term(sku=term.sku, **term.dict(exclude={"price_dimensions"}))
+@router.post("/skus/{sku}/terms/", response_model=schemas.Term)
+def create_term_by_sku(sku: str, term: schemas.TermCreate, db: Session = Depends(DatabaseManager().get_db)):
+    """Crea un término para un SKU específico."""
+    logger.info(f"Intentando crear término para SKU: {sku}")
+    pricing_data = db.query(models.PricingData).filter(models.PricingData.sku == sku).first()
+    if not pricing_data:
+        logger.error(f"SKU {sku} no encontrado")
+        raise HTTPException(status_code=404, detail="SKU not found")
+
+    # Si necesitas offerTermCode y effectiveDate, agrégalos aquí
+    db_term = models.Term(sku=sku, **term.dict())
     db.add(db_term)
     db.commit()
     db.refresh(db_term)
-    for price_dimension in term.price_dimensions:
-        db_price_dimension = models.PriceDimensions(term_id=db_term.id, **price_dimension.dict())
-        db.add(db_price_dimension)
-        db.commit()
-        db.refresh(db_price_dimension)
+    logger.info(f"Término creado con ID: {db_term.id}")
+
     return db_term
 
-@router.put("/terms/{term_id}", response_model=schemas.Term)
-def update_term(term_id: int, term: schemas.TermCreate, db: Session = Depends(DatabaseManager().get_db)):
-    db_term = db.query(models.Term).filter(models.Term.id == term_id).first()
+@router.put("/skus/{sku}/terms/{term_type}", response_model=schemas.Term)
+def update_term_by_sku(sku: str, term_type: str, term: schemas.TermCreate, db: Session = Depends(DatabaseManager().get_db)):
+    """Actualiza un término para un SKU específico y term_type."""
+    db_term = db.query(models.Term).filter(models.Term.sku == sku, models.Term.termType == term_type).first()
     if not db_term:
         raise HTTPException(status_code=404, detail="Term not found")
-    for key, value in term.dict(exclude={"price_dimensions"}).items():
+
+    for key, value in term.dict().items():
         setattr(db_term, key, value)
     db.commit()
     db.refresh(db_term)
-    # Actualizar price_dimensions (lógica adicional necesaria)
+
     return db_term
 
-@router.delete("/terms/{term_id}", response_model=dict)
-def delete_term(term_id: int, db: Session = Depends(DatabaseManager().get_db)):
-    db_term = db.query(models.Term).filter(models.Term.id == term_id).first()
+@router.delete("/skus/{sku}/terms/{term_type}", response_model=dict)
+def delete_term_by_sku(sku: str, term_type: str, db: Session = Depends(DatabaseManager().get_db)):
+    """Elimina un término para un SKU específico y term_type."""
+    db_term = db.query(models.Term).filter(models.Term.sku == sku, models.Term.termType == term_type).first()
     if not db_term:
         raise HTTPException(status_code=404, detail="Term not found")
+
+    # Eliminar la relación con PricingData
+    pricing_data = db.query(models.PricingData).filter(models.PricingData.sku == sku).first()
+    if pricing_data:
+        pricing_data.terms = [term for term in pricing_data.terms if term.id != db_term.id]
+        db.add(pricing_data)
+        db.commit()  # Agrega este commit para confirmar los cambios en pricing_data
+
     db.delete(db_term)
-    db.commit()
+    db.commit()  # Confirma la eliminación del término
+
     return {"message": "Term deleted successfully"}

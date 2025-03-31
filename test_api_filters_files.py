@@ -33,15 +33,15 @@ def test_api_filters(filters):
 
 if __name__ == "__main__":
     filters_list = [
-        # {"databaseEngine": "MySQL"},
-        # {"instanceType": "db.r5.large"},
-        # {"vcpu": 4},
-        # {"memory": "16 GiB"},
+        {"databaseEngine": "MySQL"},
+        {"instanceType": "db.r5.large"},
+        {"vcpu": 4},
+        {"memory": "16 GiB"},
         {"databaseEngine": "PostgreSQL", "instanceType": "db.r6g.large"},
-        # {"databaseEngine": "SQL Server", "vcpu": 8, "memory": "32 GiB"},
-        # {"instanceType": "db.m5.xlarge", "memory": "16 GiB"},
-        # {"databaseEngine": "MySQL", "instanceType": "db.r5.large", "vcpu": 4, "memory": "16 GiB"},
-        # {}  # Sin filtros (todos los datos)
+        {"databaseEngine": "SQL Server", "vcpu": 8, "memory": "32 GiB"},
+        {"instanceType": "db.m5.xlarge", "memory": "16 GiB"},
+        {"databaseEngine": "MySQL", "instanceType": "db.r5.large", "vcpu": 4, "memory": "16 GiB"},
+        {}  # Sin filtros (todos los datos)
     ]
 
     for filters in filters_list:
