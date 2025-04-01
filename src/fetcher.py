@@ -1,14 +1,13 @@
 import requests
 import json
-import logging
 import os
-from src.config import PRICING_URL, DATA
+from src.settings import PRICING_URL, DATA
+from src.logger import setup_logger
 
-# Configuración de logs
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Logger configuration
+logger = setup_logger("fetch_pricings")
 
-class PricingDataLoader:
+class FetcherData:
     def __init__(self, url, data_dir):
         self.url = url
         self.data_dir = data_dir
@@ -39,5 +38,5 @@ class PricingDataLoader:
             logger.error(f"Error inesperado: {e}")
 
 if __name__ == "__main__":
-    loader = PricingDataLoader(PRICING_URL, DATA)
+    loader = FetcherData(PRICING_URL, DATA)
     loader.load_pricing_data()

@@ -1,3 +1,40 @@
+# version: '3.8'
+
+# services:
+#   db:
+#     image: postgres:17.4
+#     container_name: postgres_db
+#     restart: always
+#     environment:
+#       POSTGRES_DB: ${POSTGRES_DB:-pricing_db}
+#       POSTGRES_USER: ${POSTGRES_USER:-gcrisnejo}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gcrisnejo}
+#     ports:
+#       - "5432:5432"
+#     # volumes:
+#     #   - postgres_data:/var/lib/postgresql/data/
+
+#   api:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     container_name: pricing_api
+#     ports:
+#       - "8000:8000"
+#     environment:
+#       DATABASE_URL: postgresql://${POSTGRES_USER:-gcrisnejo}:${POSTGRES_PASSWORD:-gcrisnejo}@db:5432/${POSTGRES_DB:-pricing_db}
+#       POSTGRES_USER: ${POSTGRES_USER:-gcrisnejo}
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gcrisnejo}
+#       POSTGRES_DB: ${POSTGRES_DB:-pricing_db}
+#     depends_on:
+#       - db
+#     volumes:
+#       - .:/app
+#     entrypoint: ./entrypoint.sh
+
+# # volumes:
+# #   postgres_data:
+
 version: '3.8'
 
 services:
@@ -6,8 +43,26 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_DB: pricing_db
-      POSTGRES_USER: gcrisnejo
-      POSTGRES_PASSWORD: gcrisnejo
+      POSTGRES_DB: ${POSTGRES_DB:-pricing_db}
+      POSTGRES_USER: ${POSTGRES_USER:-gcrisnejo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gcrisnejo}
     ports:
       - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pricing_api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-gcrisnejo}:${POSTGRES_PASSWORD:-gcrisnejo}@db:5432/${POSTGRES_DB:-pricing_db}
+      POSTGRES_USER: ${POSTGRES_USER:-gcrisnejo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gcrisnejo}
+      POSTGRES_DB: ${POSTGRES_DB:-pricing_db}
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: bash -c "python main.py && uvicorn main:app --host 0.0.0.0 --port 8000"

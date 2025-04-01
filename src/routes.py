@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from . import models, schemas
 from sqlalchemy.orm import Session, joinedload
 from src.database_manager import DatabaseManager
@@ -10,8 +10,20 @@ logger = setup_logger("routes")
 
 router = APIRouter()
 
+@router.get("/")
+async def root():
+    return {"message": "¡Bienvenido a la API de SleakOps Challenge!"}
+
 @router.get("/pricing_data/", response_model=List[schemas.SimplifiedPricingData])
-def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_engine: Optional[str] = None, instance_type: Optional[str] = None, vcpu: Optional[int] = None, memory: Optional[str] = None):
+def read_pricing_data(
+    db: Session = Depends(DatabaseManager().get_db),
+    database_engine: Optional[str] = None,
+    instance_type: Optional[str] = None,
+    vcpu: Optional[int] = None,
+    memory: Optional[str] = None,
+    limit: int = Query(10, description="Número máximo de elementos por página"),
+    offset: int = Query(0, description="Punto de inicio de la página")
+):
     try:
         query = db.query(models.PricingData).options(
             joinedload(models.PricingData.terms).joinedload(models.Term.price_dimensions)
@@ -24,7 +36,7 @@ def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_
             query = query.filter(models.PricingData.vcpu == vcpu)
         if memory:
             query = query.filter(models.PricingData.memory == memory)
-        results = query.all()
+        results = query.offset(offset).limit(limit).all()
 
         simplified_results = []
         for pricing_data in results:

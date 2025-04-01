@@ -4,7 +4,7 @@ from typing import Any, Optional, List, Tuple
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session as SQLAlchemySession
 from src.logger import setup_logger
-from src.config import DB_URL
+from src.settings import DB_URL
 
 # Logger configuration
 logger = setup_logger("Database")

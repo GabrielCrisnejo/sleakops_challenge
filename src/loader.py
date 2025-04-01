@@ -1,18 +1,16 @@
 import json
 import os
-import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.config import DB_URL, SQL_FILES, DATA
+from src.settings import DB_URL, DATA
 from src.models import Base, PricingData, Term, PriceDimension
+from src.logger import setup_logger
 
-# Configuración de logs
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Logger configuration
+logger = setup_logger("fetch_pricings")
 
-class RdsPricingDataLoader:
-    def __init__(self, sql_dir, data_dir):
-        self.sql_dir = sql_dir
+class LoaderData:
+    def __init__(self, data_dir):
         self.data_dir = data_dir
         self.engine = create_engine(DB_URL)
         Base.metadata.create_all(self.engine)
@@ -104,5 +102,5 @@ class RdsPricingDataLoader:
                         self.session.rollback()
 
 if __name__ == "__main__":
-    loader = RdsPricingDataLoader(SQL_FILES, DATA)
+    loader = LoaderData(DATA)
     loader.process_json_files()
