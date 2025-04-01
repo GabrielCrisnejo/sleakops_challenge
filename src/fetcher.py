@@ -5,7 +5,7 @@ from src.settings import PRICING_URL, DATA
 from src.logger import setup_logger
 
 # Logger configuration
-logger = setup_logger("fetch_pricings")
+logger = setup_logger("fetcher")
 
 class FetcherData:
     def __init__(self, url, data_dir):
@@ -13,7 +13,7 @@ class FetcherData:
         self.data_dir = data_dir
         os.makedirs(self.data_dir, exist_ok=True) # Crea el directorio si no existe
 
-    def load_pricing_data(self):
+    def fetching_data(self):
         """Descarga y guarda los datos de precios en un archivo JSON."""
         try:
             logger.info(f"Descargando datos de precios desde: {self.url}")
@@ -39,4 +39,4 @@ class FetcherData:
 
 if __name__ == "__main__":
     loader = FetcherData(PRICING_URL, DATA)
-    loader.load_pricing_data()
+    loader.fetching_data()

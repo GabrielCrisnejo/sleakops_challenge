@@ -7,17 +7,17 @@ from src.models import Base, PricingData, Term, PriceDimension
 from src.logger import setup_logger
 
 # Logger configuration
-logger = setup_logger("fetch_pricings")
+logger = setup_logger("loader")
 
 class LoaderData:
     def __init__(self, data_dir):
         self.data_dir = data_dir
         self.engine = create_engine(DB_URL)
-        Base.metadata.create_all(self.engine)
+        # Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
 
-    def process_json_files(self):
+    def loading_into_database(self):
         """Procesa los archivos JSON y carga los datos en la base de datos."""
         try:
             json_files = [f for f in os.listdir(self.data_dir) if f.endswith(".json")]
@@ -103,4 +103,4 @@ class LoaderData:
 
 if __name__ == "__main__":
     loader = LoaderData(DATA)
-    loader.process_json_files()
+    loader.loading_into_database()
