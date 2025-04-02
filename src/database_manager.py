@@ -118,3 +118,7 @@ class DatabaseManager:
                 "price_usd": price_usd
             })
             db.commit()
+
+def get_db():
+    """Función independiente para inyección de dependencias"""
+    return DatabaseManager().get_db()

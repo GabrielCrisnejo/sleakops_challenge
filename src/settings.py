@@ -17,4 +17,8 @@ DB_URL = os.getenv("DB_URL", f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{D
 PRICING_URL = "https://sleakops-interview-tests.s3.us-east-1.amazonaws.com/rds_us_east_1_pricing.json"
 
 LOG_FILE = os.getenv("LOG_FILE", str(os.path.join(BASE_DIR, "logs", "logger.log")))
+LOG_FILE_TEST = os.getenv("LOG_FILE", str(os.path.join(BASE_DIR, "logs", "logger_test.log")))
 DATA = os.getenv("DATA", str(BASE_DIR / "data"))
+
+# Variable para indicar si estamos en un entorno de tests
+TESTING = os.getenv("TESTING", False)  # Obtener la variable de entorno o False si no está definida

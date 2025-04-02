@@ -32,17 +32,33 @@ services:
         condition: service_completed_successfully
     volumes:
       - .:/app
+    command: python3 main.py
 
   migrations:
-      build:
-        context: .
-      container_name: pricing_migrations
-      environment:
-        DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      depends_on:
-        db:
-          condition: service_healthy
-      command: alembic upgrade head
+    build:
+      context: .
+    container_name: pricing_migrations
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+
+  scheduler:
+    build:
+      context: .
+    container_name: pricing_scheduler
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    volumes:
+      - ./logs:/app/logs
+    command: ["/bin/sh", "-c", "rsyslogd && cron && tail -f /var/log/cron.log /app/logs/logger.log"]
 
 volumes:
   postgres_data:

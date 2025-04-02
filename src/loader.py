@@ -53,6 +53,14 @@ class LoaderData:
         """Carga los productos en la base de datos."""
         for sku, product_data in products.items():
             try:
+                # Check if the sku already exists
+                existing_product = self.session.query(PricingData).filter(PricingData.sku == sku).first()
+
+                if existing_product:
+                    logger.info(f"SKU {sku} already exists. Skipping insert.")
+                    continue
+
+                # Insert the product if it doesn't exist
                 pricing_data = PricingData(
                     sku=sku,
                     product_family=product_data.get("productFamily"),
@@ -62,7 +70,7 @@ class LoaderData:
                     vcpu=product_data.get("attributes", {}).get("vcpu"),
                 )
                 self.session.add(pricing_data)
-                self.session.flush() # Para obtener el ID generado
+                self.session.flush()  # Para obtener el ID generado
 
             except Exception as e:
                 logger.error(f"Error al cargar producto {sku}: {e}")
