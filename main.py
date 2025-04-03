@@ -17,13 +17,13 @@ def run():
     try:
         logger.info("Running FetcherData...")
         pricing_fetcher = FetcherData(PRICING_URL, DATA)
-        logger.debug(f"FetcherData initialized with URL: {PRICING_URL}, DATA: {DATA}")
+        logger.debug(f"FetcherData initialized with URL: {PRICING_URL}")
         pricing_fetcher.fetching_data()
         logger.info("FetcherData executed successfully.")
 
         logger.info("Running LoaderData...")
         rds_loader = LoaderData(DATA)
-        logger.debug(f"LoaderData initialized with DATA: {DATA}")
+        logger.debug(f"LoaderData initialized")
         rds_loader.loading_into_database()
         logger.info("LoaderData executed successfully.")
 

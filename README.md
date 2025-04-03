@@ -9,17 +9,17 @@ The System Architecture Documentation can be found in the `docs` folder.
 ### Steps to Run
 1. Create and activate a conda environment
 ```
-$ conda create --name sk_challenge python=3.12.2 -y
-$ conda activate sk_challenge
+conda create --name sk_challenge python=3.12.2 -y
+conda activate sk_challenge
 ```
 2. Clone the repository:
 ```
-$ git clone https://github.com/GabrielCrisnejo/sleakops_challenge.git
-$ cd sleakops_challenge
+git clone https://github.com/GabrielCrisnejo/sleakops_challenge.git
+cd sleakops_challenge
 ```
 3. Start the services with Docker Compose
 ```
-$ docker-compose up --build
+docker-compose up --build
 ```
 What happens when running `docker-compose up --build`?
 
@@ -49,7 +49,7 @@ What happens when running `docker-compose up --build`?
 
 For an example of how to query pricing data, check the `example` folder:
 ```
-$ python example/api_filters_check.py
+python example/api_filters_check.py
 ```
 - `POST /skus/{sku}/terms/`: Creates a pricing term for a specific SKU.
 - `PUT /skus/{sku}/terms/{term_type}`: Updates an existing pricing term.
@@ -74,5 +74,5 @@ The project includes a robust testing setup using `pytest`, `TestClient` from Fa
 
 To run the test suite, use
 ```
-$ pytest -v
+pytest -v
 ```

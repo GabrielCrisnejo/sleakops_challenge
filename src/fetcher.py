@@ -26,7 +26,7 @@ class FetcherData:
             with open(file_path, "w") as f:
                 json.dump(data, f, indent=4)
 
-            logger.info(f"Pricing data saved to: {file_path}")
+            logger.info(f"Pricing data saved")
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Error downloading pricing data: {e}")

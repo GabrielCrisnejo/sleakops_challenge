@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 BASE_URL = "http://127.0.0.1:8000/pricing_data/"
-OUTPUT_DIR = "api_responses"  # Directory to store JSON response files
+OUTPUT_DIR = "example/api_responses"  # Directory to store JSON response files
 
 def setup_output_directory():
     """Create the output directory if it doesn't exist."""
