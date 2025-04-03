@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-# Configurar el path del proyecto para asegurar imports correctos
+# Configure project path to ensure correct imports
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
@@ -12,26 +12,29 @@ from src.loader import LoaderData
 from src.settings import PRICING_URL, DATA
 from src.logger import setup_logger
 
-# Configurar logger
+# Configure logger
 logger = setup_logger("scheduler")
 
 def run():
+    """Execute the daily data loading pipeline."""
     try:
-        
+        logger.debug("Starting data fetching process")
         pricing_fetcher = FetcherData(PRICING_URL, DATA)
         pricing_fetcher.fetching_data()
 
+        logger.debug("Starting database loading process")
         rds_loader = LoaderData(DATA)
         rds_loader.loading_into_database()
 
         return True
 
     except Exception as e:
-        logger.error(f"Error en la carga diaria: {str(e)}", exc_info=True)
+        logger.error(f"Error in daily data load: {str(e)}", exc_info=True)
         return False
 
 if __name__ == "__main__":
-    logger.info("Iniciando tarea programada de carga de datos")
+    logger.info("Starting scheduled data loading task")
     success = run()
-    logger.info("Finalización de tarea programada de carga de datos")
+    status = "completed successfully" if success else "failed"
+    logger.info(f"Scheduled data loading task {status}")
     sys.exit(0 if success else 1)

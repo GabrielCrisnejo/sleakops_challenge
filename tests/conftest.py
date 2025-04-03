@@ -21,12 +21,12 @@ def postgres_container():
     try:
         container.stop()
     except Exception as e:
-        logger.info(f"Error al detener el contenedor: {e}")
-        # Intenta forzar la eliminación si es necesario
+        logger.info(f"Error stopping container: {e}")
+        # Try force removal if needed
         try:
             container.get_wrapped_container().remove(force=True)
         except Exception as e:
-            logger.error(f"Error al forzar eliminación: {e}")
+            logger.error(f"Error forcing removal: {e}")
 
 @pytest.fixture(scope="module")
 def test_db(postgres_container):
@@ -34,7 +34,7 @@ def test_db(postgres_container):
     engine = create_engine(test_db_url)
     Base.metadata.create_all(bind=engine)
     
-    # Insertar datos básicos de prueba
+    # Insert basic test data
     with engine.connect() as conn:
         conn.execute(text("""
             INSERT INTO pricing_data (sku, product_family) 

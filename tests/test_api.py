@@ -66,22 +66,3 @@ class TestPricingAPI:
         assert response_json["termType"] == "Reserved"
         assert response_json["leaseContractLength"] == "2yr"
         assert response_json["purchaseOption"] == "Partial Upfront"
-
-    # def test_delete_term_by_sku(self, test_client):
-    #     sku = "TEST-SKU-DELETE"
-    #     term_type = "Reserved"
-
-    #     test_client.post(f"/skus/{sku}/terms/", json={
-    #         "termType": term_type,
-    #         "leaseContractLength": "1yr",
-    #         "purchaseOption": "No Upfront"
-    #     })
-
-    #     response = test_client.get(f"/pricing_data/")
-    #     assert any(item["sku"] == sku and item["termType"] == term_type for item in response.json())
-
-    #     delete_response = test_client.delete(f"/skus/{sku}/terms/{term_type}")
-    #     assert delete_response.status_code == 200
-
-    #     response = test_client.get(f"/pricing_data/")
-    #     assert not any(item["sku"] == sku and item["termType"] == term_type for item in response.json())

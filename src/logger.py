@@ -6,15 +6,15 @@ def setup_logger(name, testing=False):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     
-    # Formato
+    # Format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     
-    # Consola
+    # Console handler
     ch = logging.StreamHandler()
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     
-    # Archivo (solo si no es testing)
+    # File handler (only if not testing)
     if not testing:
         log_dir = Path('logs')
         log_dir.mkdir(exist_ok=True)
@@ -25,6 +25,6 @@ def setup_logger(name, testing=False):
             fh.setFormatter(formatter)
             logger.addHandler(fh)
         except PermissionError:
-            logger.warning("No se pudo crear el archivo de log, solo se usará consola")
+            logger.warning("Could not create log file, using console only")
     
     return logger

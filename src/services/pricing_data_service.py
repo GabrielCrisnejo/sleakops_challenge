@@ -44,5 +44,5 @@ class PricingDataService:
 
             return simplified_results
         except Exception as e:
-            logger.error(f"Error en get_pricing_data: {e}")
+            logger.error(f"Error in get_pricing_data: {e}")
             raise HTTPException(status_code=500, detail="Internal Server Error")

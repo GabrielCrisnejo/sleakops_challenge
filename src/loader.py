@@ -13,18 +13,17 @@ class LoaderData:
     def __init__(self, data_dir):
         self.data_dir = data_dir
         self.engine = create_engine(DB_URL)
-        # Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
 
     def loading_into_database(self):
-        """Procesa los archivos JSON y carga los datos en la base de datos."""
+        """Processes JSON files and loads data into the database."""
         try:
             json_files = [f for f in os.listdir(self.data_dir) if f.endswith(".json")]
 
             for file_name in json_files:
                 file_path = os.path.join(self.data_dir, file_name)
-                logger.info(f"Procesando archivo: {file_name}")
+                logger.info(f"Processing file: {file_name}")
 
                 with open(file_path, "r") as f:
                     data = json.load(f)
@@ -35,22 +34,22 @@ class LoaderData:
                     self.load_terms(data["terms"])
 
             self.session.commit()
-            logger.info("Carga de datos completada.")
+            logger.info("Data loading completed.")
 
         except json.JSONDecodeError as e:
             self.session.rollback()
-            logger.error(f"Error al decodificar JSON: {e}")
+            logger.error(f"JSON decoding error: {e}")
         except OSError as e:
             self.session.rollback()
-            logger.error(f"Error al abrir/leer archivo: {e}")
+            logger.error(f"File open/read error: {e}")
         except Exception as e:
             self.session.rollback()
-            logger.error(f"Error inesperado: {e}")
+            logger.error(f"Unexpected error: {e}")
         finally:
             self.session.close()
 
     def load_products(self, products):
-        """Carga los productos en la base de datos."""
+        """Loads products into the database."""
         for sku, product_data in products.items():
             try:
                 # Check if the sku already exists
@@ -70,30 +69,30 @@ class LoaderData:
                     vcpu=product_data.get("attributes", {}).get("vcpu"),
                 )
                 self.session.add(pricing_data)
-                self.session.flush()  # Para obtener el ID generado
+                self.session.flush()  # To get the generated ID
 
             except Exception as e:
-                logger.error(f"Error al cargar producto {sku}: {e}")
+                logger.error(f"Error loading product {sku}: {e}")
                 self.session.rollback()
 
     def load_terms(self, terms):
-        """Carga los términos en la base de datos."""
-        for term_type, term_data in terms.items():  # Itera sobre "OnDemand", "Reserved", etc.
-            for sku, offer_term_data in term_data.items():  # Itera sobre SKUs
-                for offer_term_code, term_info in offer_term_data.items():  # Itera sobre offerTermCodes
+        """Loads terms into the database."""
+        for term_type, term_data in terms.items():  # Iterates over "OnDemand", "Reserved", etc.
+            for sku, offer_term_data in term_data.items():  # Iterates over SKUs
+                for offer_term_code, term_info in offer_term_data.items():  # Iterates over offerTermCodes
                     try:
                         term = Term(
                             sku=sku,
-                            offerTermCode=term_info.get("offerTermCode"), # Usamos term_info aqui
-                            effectiveDate=term_info.get("effectiveDate"), # Y aqui
-                            termType=term_type,  # Usamos el tipo de término (OnDemand, Reserved)
+                            offerTermCode=term_info.get("offerTermCode"),  # Using term_info here
+                            effectiveDate=term_info.get("effectiveDate"),  # And here
+                            termType=term_type,  # Using term type (OnDemand, Reserved)
                             leaseContractLength=term_info.get("termAttributes", {}).get("LeaseContractLength"),
                             purchaseOption=term_info.get("termAttributes", {}).get("PurchaseOption"),
                         )
                         self.session.add(term)
-                        self.session.flush()  # Para obtener el ID generado
+                        self.session.flush()  # To get the generated ID
 
-                        for rate_code, price_dim in term_info.get("priceDimensions", {}).items(): # Y aqui
+                        for rate_code, price_dim in term_info.get("priceDimensions", {}).items():  # And here
                             price_dimension = PriceDimension(
                                 term_id=term.id,
                                 rateCode=rate_code,
@@ -106,9 +105,5 @@ class LoaderData:
                             self.session.add(price_dimension)
 
                     except Exception as e:
-                        logger.error(f"Error al cargar terminos para {sku} y {offer_term_code}: {e}")
+                        logger.error(f"Error loading terms for {sku} and {offer_term_code}: {e}")
                         self.session.rollback()
-
-if __name__ == "__main__":
-    loader = LoaderData(DATA)
-    loader.loading_into_database()

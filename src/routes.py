@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.get("/")
 async def root():
-    return {"message": "¡Bienvenido a la API de SleakOps Challenge!"}
+    return {"message": "Welcome to the SleakOps Challenge API!"}
 
 @router.get("/pricing_data/", response_model=list[schemas.SimplifiedPricingData])
 def read_pricing_data(db: Session = Depends(DatabaseManager().get_db), database_engine: str | None = None, instance_type: str | None = None, vcpu: int | None = None, memory: str | None = None, limit: int = 10, offset: int = 0):

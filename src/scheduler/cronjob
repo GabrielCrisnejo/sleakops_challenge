@@ -1,4 +1,4 @@
-# Ejecutar el scheduler diariamente a las 3 AM
+# Run the scheduler daily at 3 AM
 0 3 * * * root cd /app && /usr/local/bin/python /app/src/scheduler/scheduler.py >> /var/log/cron.log 2>&1
 
-# Línea vacía al final (requerido por cron)
+# Empty line at the end (required by cron)

@@ -13,25 +13,23 @@ app = FastAPI()
 app.include_router(pricing_router)
 
 def run():
-    """Instancia y ejecuta FetcherData y LoaderData."""
+    """Instantiates and runs FetcherData and LoaderData."""
     try:
-        logger.info("Ejecutando FetcherData...")
+        logger.info("Running FetcherData...")
         pricing_fetcher = FetcherData(PRICING_URL, DATA)
         logger.debug(f"FetcherData initialized with URL: {PRICING_URL}, DATA: {DATA}")
         pricing_fetcher.fetching_data()
-        logger.info("FetcherData ejecutado con éxito.")
+        logger.info("FetcherData executed successfully.")
 
-        logger.info("Ejecutando LoaderData...")
+        logger.info("Running LoaderData...")
         rds_loader = LoaderData(DATA)
         logger.debug(f"LoaderData initialized with DATA: {DATA}")
         rds_loader.loading_into_database()
-        logger.info("LoaderData ejecutado con éxito.")
+        logger.info("LoaderData executed successfully.")
 
     except Exception as e:
-        logger.error(f"Error al ejecutar los loaders: {e}")
+        logger.error(f"Error while running loaders: {e}")
 
 if __name__ == "__main__":
     run()
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-    
