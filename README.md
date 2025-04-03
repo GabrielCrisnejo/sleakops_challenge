@@ -49,15 +49,22 @@ What Happens when running `docker-compose up --build`?
 - `GET /pricing_data`: Retrieves processed pricing data.
 - `POST /skus/{sku}/terms/`: Creates a pricing term for a specific SKU.
 - `PUT /skus/{sku}/terms/{term_type}`: Updates an existing pricing term.
-- `DELETE /skus/{sku}/terms/{term\_type}`: Deletes a pricing term.
+- `DELETE /skus/{sku}/terms/{term_type}`: Deletes a pricing term.
 
 ## Examples
 As an example for several filters, run the script in the `example` folder:
 ```
 $ python examples/api_filters_check.py
 ```
-## Tests
-To run the test suite, use `pytest`:
+## Running Tests
+The project includes a robust testing setup using `pytest`, `TestClient` from FastAPI, and `testcontainers` for database isolation.
+
+### Testing Approach
+* `TestClient`: Used to simulate API calls and validate responses without needing to run the server separately.
+* `Testcontainers`: Runs a temporary PostgreSQL container to provide an isolated test environment, ensuring consistency between tests and the production database.
+* `Fixtures`: `pytest` fixtures initialize the database, insert test data, and provide a test client instance.
+
+To run the test suite, use
 ```
 $ pytest -v
 ```
