@@ -2,13 +2,12 @@
 ## Overview
 This project provides a REST API for retrieving AWS RDS pricing data from [AWS RDS Pricing Documentation](https://sleakops-interview-tests.s3.us-east-1.amazonaws.com/rds_us_east_1_pricing.json), filtering by various attributes, handling different contract types, and automating data ingestion from an external JSON source into a PostgreSQL database. The API allows adding, deleting, and modifying contract types for a specific product using the SKU as an identifier as well.
 
-The System Architecture Documentation can be found in the `docs` directory.
+The System Architecture Documentation can be found in the `docs` folder.
 ## Installation and Setup
 ### Prerequisites
 * Docker and Docker Compose installed.
-* Python 3.8+ installed.
 ### Steps to Run
-1. Create and activate the conda environment
+1. Create and activate a conda environment
 ```
 $ conda create --name sk_challenge python=3.12.2 -y
 $ conda activate sk_challenge
@@ -22,7 +21,7 @@ $ cd sleakops_challenge
 ```
 $ docker-compose up --build
 ```
-What Happens when running `docker-compose up --build`?
+What happens when running `docker-compose up --build`?
 
 3.1 Database Container (`db`):
 * Starts a PostgreSQL 17.4 container.
@@ -47,15 +46,24 @@ What Happens when running `docker-compose up --build`?
 
 ## Endpoints
 - `GET /pricing_data`: Retrieves processed pricing data.
+
+For an example of how to query pricing data, check the `example` folder:
+```
+$ python example/api_filters_check.py
+```
 - `POST /skus/{sku}/terms/`: Creates a pricing term for a specific SKU.
 - `PUT /skus/{sku}/terms/{term_type}`: Updates an existing pricing term.
 - `DELETE /skus/{sku}/terms/{term_type}`: Deletes a pricing term.
 
-## Examples
-As an example for several filters, run the script in the `example` folder:
+Request Body:
 ```
-$ python examples/api_filters_check.py
+{
+  "termType": "Reserved",
+  "leaseContractLength": "2yr",
+  "purchaseOption": "Partial Upfront"
+}
 ```
+See the `tests` folder for details.
 ## Running Tests
 The project includes a robust testing setup using `pytest`, `TestClient` from FastAPI, and `testcontainers` for database isolation.
 
